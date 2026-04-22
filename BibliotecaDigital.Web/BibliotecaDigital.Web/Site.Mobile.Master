@@ -1,0 +1,108 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="BibliotecaDigital.Web.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title><%: Page.Title %> - Biblioteca Digital</title>
+
+    <!-- Bootstrap 5 por CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+        }
+
+        .main-wrapper {
+            min-height: calc(100vh - 140px);
+        }
+
+        .footer-app {
+            border-top: 1px solid rgba(0,0,0,.08);
+            color: #6c757d;
+            font-size: .95rem;
+        }
+
+        [data-bs-theme="dark"] body {
+            background-color: #121212;
+            color: #f1f1f1;
+        }
+
+        [data-bs-theme="dark"] .navbar,
+        [data-bs-theme="dark"] .footer-app {
+            background-color: #1b1b1b !important;
+            border-color: rgba(255,255,255,.08);
+        }
+
+        [data-bs-theme="dark"] .text-muted {
+            color: #cfcfcf !important;
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+</head>
+<body>
+    <form id="form1" runat="server">
+
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+            <div class="container">
+                <a class="navbar-brand" href="Home.aspx">
+                    <i class="bi bi-book-half me-2"></i>Biblioteca Digital
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                    aria-controls="navbarMain" aria-expanded="false" aria-label="Alternar navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="Home.aspx">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Dashboard.aspx">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="AdminLibros.aspx">Libros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="AdminUsuarios.aspx">Usuarios</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- CONTENIDO -->
+        <main class="main-wrapper py-4">
+            <div class="container">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="footer-app bg-white py-3">
+            <div class="container text-center">
+                Biblioteca Digital &copy; <%: DateTime.Now.Year %>
+            </div>
+        </footer>
+
+    </form>
+
+    <!-- Bootstrap JS por CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
