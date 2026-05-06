@@ -2,29 +2,28 @@
 using System.Web;
 using System.Web.Http;
 using BibliotecaDigital.API.Entidades;
+using BibliotecaDigital.API.Helpers;
 using BibliotecaDigital.API.Models;
 using BibliotecaDigital.API.Negocio;
 
 namespace BibliotecaDigital.API.Controllers
 {
-    
     /// Controlador encargado de la autenticación de usuarios.
     /// Valida credenciales y registra el acceso exitoso.
-    
+
     [RoutePrefix("api/auth")]
     public class AuthController : ApiController
     {
-        
         /// Valida las credenciales de un usuario y devuelve su información básica.
         /// Además, registra el último acceso y el historial de acceso exitoso.
-        
+
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         public IHttpActionResult Login(LoginRequest request)
         {
             try
             {
-                // Validar datos mínimos de entrada
                 if (request == null ||
                     string.IsNullOrWhiteSpace(request.Correo) ||
                     string.IsNullOrWhiteSpace(request.Password))
@@ -35,7 +34,6 @@ namespace BibliotecaDigital.API.Controllers
                 UsuarioNegocio negocio = new UsuarioNegocio();
                 Usuario usuario = negocio.Login(request.Correo.Trim(), request.Password.Trim());
 
-                // Si las credenciales no son válidas
                 if (usuario == null)
                 {
                     return Ok(new
@@ -45,22 +43,21 @@ namespace BibliotecaDigital.API.Controllers
                     });
                 }
 
-                // Obtener IP del cliente que hace la solicitud
                 string direccionIP = HttpContext.Current != null &&
                                      HttpContext.Current.Request != null
                     ? HttpContext.Current.Request.UserHostAddress
                     : null;
 
-                // Registrar último acceso
                 negocio.RegistrarUltimoAcceso(usuario.IdUsuario);
-
-                // Registrar historial de acceso exitoso
                 negocio.RegistrarHistorial(usuario.IdUsuario, direccionIP, true);
 
-                // Respuesta exitosa
+                string token = JwtHelper.GenerarToken(usuario);
+
                 return Ok(new
                 {
                     success = true,
+                    message = "Login exitoso",
+                    token = token,
                     usuario = new
                     {
                         usuario.IdUsuario,
@@ -76,10 +73,11 @@ namespace BibliotecaDigital.API.Controllers
                 return InternalServerError(ex);
             }
         }
-        
+
         /// Registra un nuevo usuario en el sistema.
         /// El usuario se registra con el rol por defecto definido en la capa de datos.
-        
+
+        [AllowAnonymous]
         [HttpPost]
         [Route("register")]
         public IHttpActionResult Register(RegisterRequest request)

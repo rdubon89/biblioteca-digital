@@ -9,10 +9,17 @@ namespace BibliotecaDigital.Web
 {
     
     /// Página de administración de usuarios.
-    /// Solo el rol Administrador puede acceder.
-   
+    /// Permite listar, crear, editar y eliminar usuarios consumiendo la API.
+    /// Acceso permitido:
+    /// - Administrador
+    /// Regla especial:
+    /// - Solo superadmin@bibliomail.com puede eliminar usuarios administradores.
+    
     public partial class AdminUsuarios : System.Web.UI.Page
     {
+        
+        /// Valida sesión, permisos y carga la información inicial.
+        
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UsuarioId"] == null)
@@ -30,6 +37,8 @@ namespace BibliotecaDigital.Web
             if (!IsPostBack)
             {
                 pnlNuevoUsuario.Visible = true;
+                btnGuardarCambios.Visible = false;
+                btnCancelar.Visible = false;
 
                 CargarRoles();
                 CargarRolesNuevoUsuario();
@@ -37,18 +46,27 @@ namespace BibliotecaDigital.Web
             }
         }
 
+        
+        /// Verifica si el usuario actual tiene rol Administrador.
+        
         private bool UsuarioEsAdministrador()
         {
             string rol = Session["Rol"] != null ? Session["Rol"].ToString() : string.Empty;
             return rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase);
         }
 
+        
+        /// Verifica si el usuario actual es el superadministrador principal del sistema.
+        
         private bool UsuarioActualEsSuperAdmin()
         {
             string correo = Session["Correo"] != null ? Session["Correo"].ToString() : string.Empty;
             return correo.Equals("superadmin@bibliomail.com", StringComparison.OrdinalIgnoreCase);
         }
 
+        
+        /// Carga los roles disponibles para el formulario de edición.
+        
         private void CargarRoles()
         {
             try
@@ -59,8 +77,7 @@ namespace BibliotecaDigital.Web
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        lblMensaje.Text = "No se pudieron cargar los roles.";
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("No se pudieron cargar los roles.", true);
                         return;
                     }
 
@@ -78,11 +95,13 @@ namespace BibliotecaDigital.Web
             }
             catch (Exception ex)
             {
-                lblMensaje.Text = "Error al cargar roles: " + ex.Message;
-                lblMensaje.CssClass = "d-block mt-2 text-danger";
+                MostrarMensaje("Error al cargar roles: " + ex.Message, true);
             }
         }
 
+        
+        /// Carga los roles disponibles para el formulario de nuevo usuario.
+        
         private void CargarRolesNuevoUsuario()
         {
             try
@@ -93,8 +112,7 @@ namespace BibliotecaDigital.Web
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        lblMensajeNuevoUsuario.Text = "No se pudieron cargar los roles.";
-                        lblMensajeNuevoUsuario.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensajeNuevoUsuario("No se pudieron cargar los roles.", true);
                         return;
                     }
 
@@ -112,11 +130,13 @@ namespace BibliotecaDigital.Web
             }
             catch (Exception ex)
             {
-                lblMensajeNuevoUsuario.Text = "Error al cargar roles: " + ex.Message;
-                lblMensajeNuevoUsuario.CssClass = "d-block mt-2 text-danger";
+                MostrarMensajeNuevoUsuario("Error al cargar roles: " + ex.Message, true);
             }
         }
 
+        
+        /// Carga todos los usuarios desde la API.
+       
         private void CargarUsuarios()
         {
             try
@@ -127,8 +147,7 @@ namespace BibliotecaDigital.Web
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        lblMensaje.Text = "No se pudieron cargar los usuarios.";
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("No se pudieron cargar los usuarios.", true);
                         return;
                     }
 
@@ -142,25 +161,30 @@ namespace BibliotecaDigital.Web
             }
             catch (Exception ex)
             {
-                lblMensaje.Text = "Error al cargar usuarios: " + ex.Message;
-                lblMensaje.CssClass = "d-block mt-2 text-danger";
+                MostrarMensaje("Error al cargar usuarios: " + ex.Message, true);
             }
         }
 
+        
+        /// Ejecuta acciones del GridView: editar o eliminar usuario.
+        
         protected void gvUsuarios_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            int idUsuario = Convert.ToInt32(e.CommandArgument);
+
             if (e.CommandName == "EditarUsuario")
             {
-                int idUsuario = Convert.ToInt32(e.CommandArgument);
                 CargarUsuarioParaEdicion(idUsuario);
             }
             else if (e.CommandName == "EliminarUsuario")
             {
-                int idUsuario = Convert.ToInt32(e.CommandArgument);
                 EliminarUsuario(idUsuario);
             }
         }
 
+        
+        /// Carga un usuario seleccionado en el formulario de edición.
+        
         private void CargarUsuarioParaEdicion(int idUsuario)
         {
             try
@@ -171,8 +195,7 @@ namespace BibliotecaDigital.Web
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        lblMensaje.Text = "No se pudo cargar el usuario.";
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("No se pudo cargar el usuario.", true);
                         return;
                     }
 
@@ -182,38 +205,39 @@ namespace BibliotecaDigital.Web
 
                     if (usuario == null)
                     {
-                        lblMensaje.Text = "No se encontró el usuario seleccionado.";
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("No se encontró el usuario seleccionado.", true);
                         return;
                     }
 
                     hfIdUsuario.Value = usuario.IdUsuario.ToString();
                     txtNombre.Text = usuario.Nombre;
                     txtCorreo.Text = usuario.Correo;
-                    ddlRol.SelectedValue = usuario.IdRol.ToString();
+
+                    if (ddlRol.Items.FindByValue(usuario.IdRol.ToString()) != null)
+                        ddlRol.SelectedValue = usuario.IdRol.ToString();
 
                     btnGuardarCambios.Visible = true;
                     btnCancelar.Visible = true;
 
-                    lblMensaje.Text = "Usuario cargado para edición.";
-                    lblMensaje.CssClass = "d-block mt-2 text-primary";
+                    MostrarMensaje("Usuario cargado para edición.", false, "primary");
                 }
             }
             catch (Exception ex)
             {
-                lblMensaje.Text = "Error al cargar usuario: " + ex.Message;
-                lblMensaje.CssClass = "d-block mt-2 text-danger";
+                MostrarMensaje("Error al cargar usuario: " + ex.Message, true);
             }
         }
 
+        
+        /// Actualiza los datos principales de un usuario.
+        
         protected void btnGuardarCambios_Click(object sender, EventArgs e)
         {
             lblMensaje.Text = string.Empty;
-            lblMensaje.CssClass = "d-block mt-2 text-danger";
 
             if (string.IsNullOrWhiteSpace(hfIdUsuario.Value))
             {
-                lblMensaje.Text = "No hay un usuario seleccionado.";
+                MostrarMensaje("No hay un usuario seleccionado.", true);
                 return;
             }
 
@@ -221,7 +245,7 @@ namespace BibliotecaDigital.Web
                 string.IsNullOrWhiteSpace(txtCorreo.Text) ||
                 string.IsNullOrWhiteSpace(ddlRol.SelectedValue))
             {
-                lblMensaje.Text = "Complete nombre, correo y rol.";
+                MostrarMensaje("Complete nombre, correo y rol.", true);
                 return;
             }
 
@@ -251,37 +275,36 @@ namespace BibliotecaDigital.Web
 
                     if (response.IsSuccessStatusCode)
                     {
-                        lblMensaje.Text = "Usuario actualizado correctamente.";
-                        lblMensaje.CssClass = "d-block mt-2 text-success";
-
+                        MostrarMensaje("Usuario actualizado correctamente.", false, "success");
                         LimpiarFormularioEdicion();
                         CargarUsuarios();
                     }
                     else
                     {
                         string error = response.Content.ReadAsStringAsync().Result;
-                        lblMensaje.Text = "No se pudo actualizar el usuario: " + error;
+                        MostrarMensaje("No se pudo actualizar el usuario: " + error, true);
                     }
                 }
             }
             catch (Exception ex)
             {
-                lblMensaje.Text = "Error al actualizar el usuario: " + ex.Message;
-                lblMensaje.CssClass = "d-block mt-2 text-danger";
+                MostrarMensaje("Error al actualizar el usuario: " + ex.Message, true);
             }
         }
 
+        
+        /// Agrega un nuevo usuario mediante la API.
+        
         protected void btnAgregarUsuario_Click(object sender, EventArgs e)
         {
             lblMensajeNuevoUsuario.Text = string.Empty;
-            lblMensajeNuevoUsuario.CssClass = "d-block mt-2 text-danger";
 
             if (string.IsNullOrWhiteSpace(txtNuevoNombre.Text) ||
                 string.IsNullOrWhiteSpace(txtNuevoCorreo.Text) ||
                 string.IsNullOrWhiteSpace(txtNuevoPassword.Text) ||
                 string.IsNullOrWhiteSpace(ddlNuevoRol.SelectedValue))
             {
-                lblMensajeNuevoUsuario.Text = "Complete nombre, correo, contraseña y rol.";
+                MostrarMensajeNuevoUsuario("Complete nombre, correo, contraseña y rol.", true);
                 return;
             }
 
@@ -307,25 +330,26 @@ namespace BibliotecaDigital.Web
 
                     if (response.IsSuccessStatusCode)
                     {
-                        lblMensajeNuevoUsuario.Text = "Usuario agregado correctamente.";
-                        lblMensajeNuevoUsuario.CssClass = "d-block mt-2 text-success";
-
+                        MostrarMensajeNuevoUsuario("Usuario agregado correctamente.", false, "success");
                         LimpiarFormularioNuevoUsuario();
                         CargarUsuarios();
                     }
                     else
                     {
-                        lblMensajeNuevoUsuario.Text = "No se pudo agregar el usuario: " + responseJson;
+                        MostrarMensajeNuevoUsuario("No se pudo agregar el usuario: " + responseJson, true);
                     }
                 }
             }
             catch (Exception ex)
             {
-                lblMensajeNuevoUsuario.Text = "Error al agregar usuario: " + ex.Message;
-                lblMensajeNuevoUsuario.CssClass = "d-block mt-2 text-danger";
+                MostrarMensajeNuevoUsuario("Error al agregar usuario: " + ex.Message, true);
             }
         }
 
+       
+        /// Elimina un usuario desde la API.
+        /// Antes de eliminar valida si el usuario objetivo es Administrador.
+        
         private void EliminarUsuario(int idUsuario)
         {
             try
@@ -336,8 +360,7 @@ namespace BibliotecaDigital.Web
 
                     if (!getResponse.IsSuccessStatusCode)
                     {
-                        lblMensaje.Text = "No se pudo cargar el usuario a eliminar.";
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("No se pudo cargar el usuario a eliminar.", true);
                         return;
                     }
 
@@ -347,16 +370,13 @@ namespace BibliotecaDigital.Web
 
                     if (usuario == null)
                     {
-                        lblMensaje.Text = "No se encontró el usuario a eliminar.";
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("No se encontró el usuario a eliminar.", true);
                         return;
                     }
 
-                    if (usuario.Rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase) &&
-                        !UsuarioActualEsSuperAdmin())
+                    if (usuario.IdRol == 1 && !UsuarioActualEsSuperAdmin())
                     {
-                        lblMensaje.Text = "Solo superadmin@bibliomail.com puede eliminar a otro Administrador.";
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("Solo superadmin@bibliomail.com puede eliminar a otro Administrador.", true);
                         return;
                     }
 
@@ -364,8 +384,7 @@ namespace BibliotecaDigital.Web
 
                     if (deleteResponse.IsSuccessStatusCode)
                     {
-                        lblMensaje.Text = "Usuario eliminado correctamente.";
-                        lblMensaje.CssClass = "d-block mt-2 text-success";
+                        MostrarMensaje("Usuario eliminado correctamente.", false, "success");
 
                         if (hfIdUsuario.Value == idUsuario.ToString())
                             LimpiarFormularioEdicion();
@@ -375,25 +394,28 @@ namespace BibliotecaDigital.Web
                     else
                     {
                         string error = deleteResponse.Content.ReadAsStringAsync().Result;
-                        lblMensaje.Text = "No se pudo eliminar el usuario: " + error;
-                        lblMensaje.CssClass = "d-block mt-2 text-danger";
+                        MostrarMensaje("No se pudo eliminar el usuario: " + error, true);
                     }
                 }
             }
             catch (Exception ex)
             {
-                lblMensaje.Text = "Error al eliminar el usuario: " + ex.Message;
-                lblMensaje.CssClass = "d-block mt-2 text-danger";
+                MostrarMensaje("Error al eliminar el usuario: " + ex.Message, true);
             }
         }
 
+        
+        /// Cancela la edición actual.
+        
         protected void btnCancelar_Click(object sender, EventArgs e)
         {
             LimpiarFormularioEdicion();
-            lblMensaje.Text = "Edición cancelada.";
-            lblMensaje.CssClass = "d-block mt-2 text-secondary";
+            MostrarMensaje("Edición cancelada.", false, "secondary");
         }
 
+        
+        /// Limpia el formulario de edición.
+        
         private void LimpiarFormularioEdicion()
         {
             hfIdUsuario.Value = string.Empty;
@@ -407,6 +429,9 @@ namespace BibliotecaDigital.Web
             btnCancelar.Visible = false;
         }
 
+        
+        /// Limpia el formulario de nuevo usuario.
+        
         private void LimpiarFormularioNuevoUsuario()
         {
             txtNuevoNombre.Text = string.Empty;
@@ -415,6 +440,32 @@ namespace BibliotecaDigital.Web
 
             if (ddlNuevoRol.Items.Count > 0)
                 ddlNuevoRol.SelectedIndex = 0;
+        }
+
+        
+        /// Muestra mensajes generales de edición/listado.
+        
+        private void MostrarMensaje(string mensaje, bool esError, string tipo = null)
+        {
+            lblMensaje.Text = mensaje;
+
+            if (tipo == null)
+                tipo = esError ? "danger" : "success";
+
+            lblMensaje.CssClass = "d-block mt-2 text-" + tipo;
+        }
+
+        
+        /// Muestra mensajes del formulario de nuevo usuario.
+        
+        private void MostrarMensajeNuevoUsuario(string mensaje, bool esError, string tipo = null)
+        {
+            lblMensajeNuevoUsuario.Text = mensaje;
+
+            if (tipo == null)
+                tipo = esError ? "danger" : "success";
+
+            lblMensajeNuevoUsuario.CssClass = "d-block mt-2 text-" + tipo;
         }
     }
 }

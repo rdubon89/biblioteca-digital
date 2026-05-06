@@ -5,24 +5,19 @@ using System.Web.Script.Serialization;
 
 namespace BibliotecaDigital.Web
 {
-    
     /// Página de inicio de sesión del sistema.
     /// Consume la API del backend para validar credenciales.
-   
+
     public partial class Login : System.Web.UI.Page
     {
-        
         /// Evento de carga de la página.
-        
         protected void Page_Load(object sender, EventArgs e)
         {
             // El tema visual se controla desde Site.Master
         }
 
-        
         /// Valida los campos, consume la API de autenticación
         /// y crea la sesión del usuario si las credenciales son correctas.
-        
         protected void btnLogin_Click(object sender, EventArgs e)
         {
             lblMensaje.Text = string.Empty;
@@ -84,6 +79,9 @@ namespace BibliotecaDigital.Web
                         Session["Rol"] = result.usuario.Rol;
                         Session["IdRol"] = result.usuario.IdRol;
                         Session["Correo"] = result.usuario.Correo;
+
+                        // 🔥 NUEVO: Guardar token JWT
+                        Session["Token"] = result.token;
 
                         // Redirigir al Home
                         Response.Redirect("Home.aspx");

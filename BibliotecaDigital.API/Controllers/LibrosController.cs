@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -12,15 +11,18 @@ using BibliotecaDigital.API.Negocio;
 namespace BibliotecaDigital.API.Controllers
 {
     
-    /// Controlador de libros.
-    /// Expone consulta, apertura, descarga, carga, actualización y eliminación.
+    /// Controlador de libros protegido por JWT.
+    /// Roles reales en BD:
+    /// Rol 1 = Administrador
+    /// Rol 2 = Ejecutivo
+    /// Rol 3 = Bibliotecario
+    /// Rol 4 = Usuario general
     
+    [Authorize]
     [RoutePrefix("api/libros")]
     public class LibrosController : ApiController
     {
-        
-        /// Obtiene todos los libros registrados.
-       
+        [Authorize(Roles = "1,2,3,4")]
         [HttpGet]
         [Route("")]
         public IHttpActionResult GetLibros()
@@ -37,9 +39,7 @@ namespace BibliotecaDigital.API.Controllers
             }
         }
 
-       
-        /// Obtiene un libro específico por su Id.
-       
+        [Authorize(Roles = "1,2,3,4")]
         [HttpGet]
         [Route("{id:int}")]
         public IHttpActionResult GetLibroPorId(int id)
@@ -60,9 +60,7 @@ namespace BibliotecaDigital.API.Controllers
             }
         }
 
-        
-        /// Devuelve el archivo para abrirlo en el navegador.
-        
+        [Authorize(Roles = "1,2,3,4")]
         [HttpGet]
         [Route("abrir/{id:int}")]
         public IHttpActionResult Abrir(int id)
@@ -86,6 +84,7 @@ namespace BibliotecaDigital.API.Controllers
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
                 response.Content = new StreamContent(File.OpenRead(rutaArchivo));
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
                 response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("inline")
                 {
                     FileName = Path.GetFileName(rutaArchivo)
@@ -99,9 +98,7 @@ namespace BibliotecaDigital.API.Controllers
             }
         }
 
-      
-        /// Devuelve el archivo como descarga.
-        
+        [Authorize(Roles = "1,2,3,4")]
         [HttpGet]
         [Route("descargar/{id:int}")]
         public IHttpActionResult Descargar(int id)
@@ -125,6 +122,7 @@ namespace BibliotecaDigital.API.Controllers
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
                 response.Content = new StreamContent(File.OpenRead(rutaArchivo));
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
                 response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
                 {
                     FileName = Path.GetFileName(rutaArchivo)
@@ -138,10 +136,7 @@ namespace BibliotecaDigital.API.Controllers
             }
         }
 
-        
-        /// Carga un libro nuevo con archivo incluido.
-        /// Recibe multipart/form-data.
-        
+        [Authorize(Roles = "1,3")]
         [HttpPost]
         [Route("upload")]
         public IHttpActionResult UploadLibro()
@@ -159,14 +154,10 @@ namespace BibliotecaDigital.API.Controllers
                 if (string.IsNullOrWhiteSpace(titulo) ||
                     string.IsNullOrWhiteSpace(autor) ||
                     string.IsNullOrWhiteSpace(idCategoriaTexto))
-                {
                     return BadRequest("Debe enviar título, autor y categoría.");
-                }
 
                 if (request.Files.Count == 0)
-                {
                     return BadRequest("Debe enviar un archivo.");
-                }
 
                 HttpPostedFile archivo = request.Files[0];
 
@@ -211,6 +202,7 @@ namespace BibliotecaDigital.API.Controllers
                     fechaPublicacion = Convert.ToDateTime(fechaTexto);
 
                 LibroNegocio libroNegocio = new LibroNegocio();
+
                 int idLibro = libroNegocio.InsertarLibro(
                     titulo.Trim(),
                     autor.Trim(),
@@ -233,11 +225,7 @@ namespace BibliotecaDigital.API.Controllers
             }
         }
 
-        
-        /// Actualiza un libro.
-        /// Puede recibir archivo nuevo o conservar el actual.
-        /// Recibe multipart/form-data.
-        
+        [Authorize(Roles = "1,3")]
         [HttpPut]
         [Route("{id:int}")]
         public IHttpActionResult ActualizarLibro(int id)
@@ -255,9 +243,7 @@ namespace BibliotecaDigital.API.Controllers
                 if (string.IsNullOrWhiteSpace(titulo) ||
                     string.IsNullOrWhiteSpace(autor) ||
                     string.IsNullOrWhiteSpace(idCategoriaTexto))
-                {
                     return BadRequest("Debe enviar título, autor y categoría.");
-                }
 
                 int idCategoria = Convert.ToInt32(idCategoriaTexto);
 
@@ -309,8 +295,11 @@ namespace BibliotecaDigital.API.Controllers
 
                         archivo.SaveAs(nuevaRutaArchivo);
 
-                        if (!string.IsNullOrWhiteSpace(libroActual.RutaArchivo) && File.Exists(libroActual.RutaArchivo))
+                        if (!string.IsNullOrWhiteSpace(libroActual.RutaArchivo) &&
+                            File.Exists(libroActual.RutaArchivo))
+                        {
                             File.Delete(libroActual.RutaArchivo);
+                        }
 
                         rutaArchivo = nuevaRutaArchivo;
                     }
@@ -342,9 +331,7 @@ namespace BibliotecaDigital.API.Controllers
             }
         }
 
-        
-        /// Elimina un libro y su archivo físico si existe.
-        
+        [Authorize(Roles = "1,3")]
         [HttpDelete]
         [Route("{id:int}")]
         public IHttpActionResult EliminarLibro(int id)
@@ -357,8 +344,11 @@ namespace BibliotecaDigital.API.Controllers
                 if (libro == null)
                     return NotFound();
 
-                if (!string.IsNullOrWhiteSpace(libro.RutaArchivo) && File.Exists(libro.RutaArchivo))
+                if (!string.IsNullOrWhiteSpace(libro.RutaArchivo) &&
+                    File.Exists(libro.RutaArchivo))
+                {
                     File.Delete(libro.RutaArchivo);
+                }
 
                 libroNegocio.EliminarLibro(id);
 
@@ -374,9 +364,6 @@ namespace BibliotecaDigital.API.Controllers
             }
         }
 
-        
-        /// Devuelve el Content-Type según la extensión del archivo.
-        
         private string ObtenerContentType(string extension)
         {
             if (extension == ".pdf") return "application/pdf";

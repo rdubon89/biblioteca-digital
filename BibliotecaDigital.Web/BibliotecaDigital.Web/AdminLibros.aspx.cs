@@ -11,13 +11,19 @@ namespace BibliotecaDigital.Web
     
     /// Página de administración de libros.
     /// Consume la API del backend para listar, registrar, editar y eliminar libros.
-    /// También permite crear una nueva categoría al momento de guardar o actualizar.
-    
+    /// Permite cargar archivos físicos y asociarlos a categorías.
+    /// 
+    /// Roles reales en base de datos:
+    /// 1 = Administrador
+    /// 2 = Ejecutivo
+    /// 3 = Bibliotecario
+    /// 4 = User
+  
     public partial class AdminLibros : System.Web.UI.Page
     {
         
-        /// Evento de carga de la página.
-        /// Valida sesión y permisos, y carga datos iniciales.
+        /// Valida sesión, permisos y carga datos iniciales.
+        /// Solo Administrador y Bibliotecario pueden administrar libros.
         
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -29,7 +35,7 @@ namespace BibliotecaDigital.Web
 
             int idRol = ObtenerIdRolDesdeSesion();
 
-            if (idRol != 1 && idRol != 2 && idRol != 3)
+            if (idRol != 1 && idRol != 3)
             {
                 Response.Redirect("Home.aspx");
                 return;
@@ -43,7 +49,8 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Carga las categorías desde la API y agrega la opción de nueva categoría.
+        /// Carga las categorías desde la API.
+        /// Agrega opciones para seleccionar una existente o crear una nueva.
         
         private void CargarCategorias()
         {
@@ -81,7 +88,7 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Carga todos los libros desde la API.
+        /// Carga todos los libros desde la API y los muestra en el GridView.
         
         private void CargarLibros()
         {
@@ -112,9 +119,10 @@ namespace BibliotecaDigital.Web
                 lblMensaje.CssClass = "d-block mt-2 text-danger";
             }
         }
+
         
-        /// Crea una nueva categoría en la API.
-        /// Si la categoría ya existe, reutiliza su Id.
+        /// Crea una nueva categoría mediante la API.
+        /// Si ya existe una categoría con el mismo nombre, reutiliza su Id.
         
         private int CrearNuevaCategoria()
         {
@@ -130,7 +138,6 @@ namespace BibliotecaDigital.Web
             {
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-                // 1. Verificar si ya existe la categoría
                 string urlBusqueda = "api/categorias/por-nombre?nombre=" + Uri.EscapeDataString(nombreCategoria);
                 HttpResponseMessage responseBusqueda = client.GetAsync(urlBusqueda).Result;
 
@@ -140,12 +147,9 @@ namespace BibliotecaDigital.Web
                     Categoria categoriaExistente = serializer.Deserialize<Categoria>(jsonExistente);
 
                     if (categoriaExistente != null)
-                    {
                         return categoriaExistente.IdCategoria;
-                    }
                 }
 
-                // 2. Si no existe, crearla
                 var requestData = new
                 {
                     Nombre = nombreCategoria,
@@ -167,20 +171,16 @@ namespace BibliotecaDigital.Web
                 Dictionary<string, object> result = serializer.Deserialize<Dictionary<string, object>>(responseJson);
 
                 if (result.ContainsKey("idCategoria"))
-                {
                     return Convert.ToInt32(result["idCategoria"]);
-                }
 
                 throw new Exception("La API no devolvió el Id de la categoría.");
             }
         }
 
-
-        /// Obtiene la fecha de publicación validada.
-        /// Bonus:
-        /// - Permite fecha vacía.
-        /// - Bloquea fechas futuras.
-
+        
+        /// Obtiene y valida la fecha de publicación.
+        /// Permite fecha vacía y bloquea fechas futuras.
+        
         private DateTime? ObtenerFechaPublicacionValidada()
         {
             if (string.IsNullOrWhiteSpace(txtFechaPublicacion.Text))
@@ -194,28 +194,23 @@ namespace BibliotecaDigital.Web
             return fecha;
         }
 
-       
-        /// Determina qué categoría usar:
-        /// una existente o una nueva creada en el momento.
+        
+        /// Determina si se usará una categoría existente o si debe crearse una nueva.
        
         private int ObtenerIdCategoriaFinal()
         {
             if (ddlCategoria.SelectedValue == "-1")
-            {
                 return CrearNuevaCategoria();
-            }
 
             if (string.IsNullOrWhiteSpace(ddlCategoria.SelectedValue))
-            {
                 throw new Exception("Debe seleccionar una categoría.");
-            }
 
             return Convert.ToInt32(ddlCategoria.SelectedValue);
         }
 
         
-        /// Registra un libro enviando multipart/form-data a la API.
-        
+        /// Registra un libro enviando datos y archivo mediante multipart/form-data.
+       
         protected void btnSubir_Click(object sender, EventArgs e)
         {
             lblMensaje.Text = string.Empty;
@@ -246,9 +241,7 @@ namespace BibliotecaDigital.Web
                     form.Add(new StringContent(txtTitulo.Text.Trim()), "Titulo");
                     form.Add(new StringContent(txtAutor.Text.Trim()), "Autor");
                     form.Add(new StringContent(txtISBN.Text.Trim()), "ISBN");
-                    form.Add(new StringContent(fechaPublicacion.HasValue
-                        ? fechaPublicacion.Value.ToString("yyyy-MM-dd")
-                        : string.Empty), "FechaPublicacion");
+                    form.Add(new StringContent(fechaPublicacion.HasValue ? fechaPublicacion.Value.ToString("yyyy-MM-dd") : string.Empty), "FechaPublicacion");
                     form.Add(new StringContent(idCategoriaFinal.ToString()), "IdCategoria");
 
                     byte[] archivoBytes = fuLibro.FileBytes;
@@ -283,8 +276,8 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Maneja las acciones del GridView.
-       
+        /// Ejecuta acciones del GridView: editar o eliminar libro.
+        
         protected void gvLibros_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (e.CommandName == "EditarLibro")
@@ -300,8 +293,8 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Carga un libro desde la API en el formulario para edición.
-        
+        /// Carga los datos de un libro en el formulario para edición.
+       
         private void CargarLibroParaEdicion(int idLibro)
         {
             try
@@ -333,7 +326,6 @@ namespace BibliotecaDigital.Web
                     txtAutor.Text = libro.Autor;
                     txtISBN.Text = libro.ISBN;
 
-                    // Corrección: FechaPublicacion es DateTime?, no string
                     txtFechaPublicacion.Text = libro.FechaPublicacion.HasValue
                         ? libro.FechaPublicacion.Value.ToString("yyyy-MM-dd")
                         : string.Empty;
@@ -355,9 +347,9 @@ namespace BibliotecaDigital.Web
             }
         }
 
-       
+        
         /// Actualiza un libro mediante la API.
-        /// Puede usar una categoría existente o una nueva.
+        /// Si se selecciona un archivo nuevo, reemplaza el anterior en el backend.
         
         protected void btnActualizar_Click(object sender, EventArgs e)
         {
@@ -389,9 +381,7 @@ namespace BibliotecaDigital.Web
                     form.Add(new StringContent(txtTitulo.Text.Trim()), "Titulo");
                     form.Add(new StringContent(txtAutor.Text.Trim()), "Autor");
                     form.Add(new StringContent(txtISBN.Text.Trim()), "ISBN");
-                    form.Add(new StringContent(fechaPublicacion.HasValue
-                        ? fechaPublicacion.Value.ToString("yyyy-MM-dd")
-                        : string.Empty), "FechaPublicacion");
+                    form.Add(new StringContent(fechaPublicacion.HasValue ? fechaPublicacion.Value.ToString("yyyy-MM-dd") : string.Empty), "FechaPublicacion");
                     form.Add(new StringContent(idCategoriaFinal.ToString()), "IdCategoria");
 
                     if (fuLibro.HasFile)
@@ -431,8 +421,9 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Elimina un libro a través de la API.
-       
+        /// Elimina un libro mediante la API.
+        /// El backend también elimina el archivo físico si existe.
+        
         private void EliminarLibro(int idLibro)
         {
             try
@@ -465,8 +456,8 @@ namespace BibliotecaDigital.Web
             }
         }
 
-       
-        /// Cancela la edición actual.
+        
+        /// Cancela la edición actual y limpia el formulario.
         
         protected void btnCancelar_Click(object sender, EventArgs e)
         {
@@ -476,8 +467,8 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Limpia el formulario y restablece el estado inicial.
-       
+        /// Limpia el formulario y restablece el modo creación.
+        
         private void LimpiarFormulario()
         {
             hfIdLibro.Value = string.Empty;
@@ -497,15 +488,15 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Convierte el rol guardado en sesión a un Id lógico.
+        /// Convierte el nombre del rol almacenado en sesión al Id real de la base de datos.
         
         private int ObtenerIdRolDesdeSesion()
         {
             string rol = Session["Rol"] == null ? "" : Session["Rol"].ToString();
 
             if (rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase)) return 1;
-            if (rol.Equals("Bibliotecario", StringComparison.OrdinalIgnoreCase)) return 2;
-            if (rol.Equals("Ejecutivo", StringComparison.OrdinalIgnoreCase)) return 3;
+            if (rol.Equals("Ejecutivo", StringComparison.OrdinalIgnoreCase)) return 2;
+            if (rol.Equals("Bibliotecario", StringComparison.OrdinalIgnoreCase)) return 3;
             if (rol.Equals("User", StringComparison.OrdinalIgnoreCase)) return 4;
 
             return 0;

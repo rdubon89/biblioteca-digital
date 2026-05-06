@@ -3,7 +3,6 @@
 <!DOCTYPE html>
 <html lang="es" data-bs-theme="light">
 <head runat="server">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%: Page.Title %> - Biblioteca Digital</title>
@@ -18,57 +17,56 @@
             transition: background-color .25s ease, color .25s ease;
         }
 
+        .navbar-mica {
+            background: rgba(33, 37, 41, 0.92) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.25rem;
-        }
-
-        .navbar-mica {
-            background: rgba(33, 37, 41, 0.78) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        [data-bs-theme="light"] .navbar-mica {
-            background: rgba(80, 80, 80, 0.78) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        [data-bs-theme="dark"] .navbar-mica {
-            background: rgba(28, 28, 30, 0.82) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+            letter-spacing: -.02em;
         }
 
         .navbar .nav-link {
-            color: #e8e8e8 !important;
-            transition: color .2s ease, opacity .2s ease;
+            color: rgba(255,255,255,.82) !important;
+            font-size: .94rem;
+            padding-left: .85rem;
+            padding-right: .85rem;
         }
 
         .navbar .nav-link:hover,
-        .navbar .nav-link:focus {
-            color: #ffffff !important;
-            opacity: 1;
-        }
-
         .navbar .nav-link.active {
             color: #ffffff !important;
             font-weight: 600;
+        }
+
+        .user-pill {
+            color: #ffffff !important;
+            opacity: .9;
+            font-size: .92rem;
+            white-space: nowrap;
+        }
+
+        .logout-link {
+            color: #ffb3b3 !important;
+        }
+
+        .logout-link:hover {
+            color: #ffffff !important;
         }
 
         .theme-switch-wrapper {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding-left: .75rem;
         }
 
         .theme-icon {
             color: #ffffff;
             font-size: 1rem;
-            line-height: 1;
-            display: flex;
-            align-items: center;
         }
 
         .theme-toggle {
@@ -89,7 +87,7 @@
             position: absolute;
             cursor: pointer;
             inset: 0;
-            background-color: rgba(255, 255, 255, 0.22);
+            background-color: rgba(255,255,255,.22);
             transition: .25s;
             border-radius: 999px;
             border: 1px solid rgba(255,255,255,.12);
@@ -109,7 +107,7 @@
         }
 
         .theme-toggle input:checked + .theme-slider {
-            background-color: #1f1f1f;
+            background-color: #111827;
         }
 
         .theme-toggle input:checked + .theme-slider:before {
@@ -120,11 +118,6 @@
             min-height: calc(100vh - 76px);
             padding-top: 2rem;
             padding-bottom: 2rem;
-        }
-
-        [data-bs-theme="light"] body {
-            background-color: #f5f7fa;
-            color: #212529;
         }
 
         [data-bs-theme="dark"] body {
@@ -146,43 +139,18 @@
         [data-bs-theme="dark"] .form-select,
         [data-bs-theme="dark"] textarea,
         [data-bs-theme="dark"] select,
-        [data-bs-theme="dark"] input[type="text"],
-        [data-bs-theme="dark"] input[type="password"],
-        [data-bs-theme="dark"] input[type="email"],
-        [data-bs-theme="dark"] input[type="number"] {
+        [data-bs-theme="dark"] input {
             background-color: #17191d !important;
             color: #f8f9fa !important;
-            border: 1px solid #343a40 !important;
+            border-color: #343a40 !important;
         }
 
         [data-bs-theme="dark"] .form-control:focus,
         [data-bs-theme="dark"] .form-select:focus,
-        [data-bs-theme="dark"] textarea:focus,
-        [data-bs-theme="dark"] select:focus,
-        [data-bs-theme="dark"] input:focus {
-            background-color: #17191d !important;
-            color: #ffffff !important;
+        [data-bs-theme="dark"] input:focus,
+        [data-bs-theme="dark"] textarea:focus {
             border-color: #4d6bfe !important;
-            box-shadow: 0 0 0 .2rem rgba(77, 107, 254, 0.2) !important;
-        }
-
-        [data-bs-theme="dark"] .form-control::placeholder,
-        [data-bs-theme="dark"] textarea::placeholder {
-            color: #adb5bd !important;
-        }
-
-        [data-bs-theme="dark"] .table {
-            --bs-table-bg: #1b1f24;
-            --bs-table-color: #f8f9fa;
-            --bs-table-border-color: #343a40;
-        }
-
-        [data-bs-theme="dark"] a {
-            color: #8ab4ff;
-        }
-
-        [data-bs-theme="dark"] a:hover {
-            color: #a9c7ff;
+            box-shadow: 0 0 0 .2rem rgba(77,107,254,.2) !important;
         }
 
         [data-bs-theme="dark"] .text-dark {
@@ -197,59 +165,15 @@
             border-color: #343a40 !important;
         }
 
-        /* BOTONES EN MODO OSCURO */
         [data-bs-theme="dark"] .btn,
-        [data-bs-theme="dark"] .btn-success,
-        [data-bs-theme="dark"] .btn-primary,
-        [data-bs-theme="dark"] .btn-secondary,
-        [data-bs-theme="dark"] .btn-outline-primary,
-        [data-bs-theme="dark"] .btn-outline-success,
-        [data-bs-theme="dark"] .btn-outline-secondary,
-        [data-bs-theme="dark"] .btn-outline-light,
-        [data-bs-theme="dark"] .btn-link {
+        [data-bs-theme="dark"] .btn i {
             color: #ffffff !important;
-        }
-
-        [data-bs-theme="dark"] .btn:hover,
-        [data-bs-theme="dark"] .btn-success:hover,
-        [data-bs-theme="dark"] .btn-primary:hover,
-        [data-bs-theme="dark"] .btn-secondary:hover,
-        [data-bs-theme="dark"] .btn-outline-primary:hover,
-        [data-bs-theme="dark"] .btn-outline-success:hover,
-        [data-bs-theme="dark"] .btn-outline-secondary:hover,
-        [data-bs-theme="dark"] .btn-outline-light:hover,
-        [data-bs-theme="dark"] .btn-link:hover {
-            color: #ffffff !important;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-primary {
-            border-color: #4d6bfe !important;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-success {
-            border-color: #20c997 !important;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-secondary {
-            border-color: #9aa0a6 !important;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-primary:hover,
-        [data-bs-theme="dark"] .btn-outline-success:hover,
-        [data-bs-theme="dark"] .btn-outline-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.06) !important;
-        }
-
-        /* Íconos dentro de botones */
-        [data-bs-theme="dark"] .btn i,
-        [data-bs-theme="dark"] .btn svg {
-            color: #ffffff !important;
-            fill: currentColor;
         }
     </style>
 
     <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
 </head>
+
 <body>
     <form id="form1" runat="server">
 
@@ -266,22 +190,53 @@
 
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav ms-auto align-items-lg-center">
-                        <li class="nav-item">
-                            <a class="nav-link" href="Home.aspx">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="Dashboard.aspx">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="AdminLibros.aspx">Libros</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="AdminUsuarios.aspx">Usuarios</a>
-                        </li>
 
-                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <asp:PlaceHolder ID="pnlMenuPublico" runat="server">
+                            <li class="nav-item">
+                                <a class="nav-link" href="Login.aspx">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                                </a>
+                            </li>
+                        </asp:PlaceHolder>
+
+                        <asp:PlaceHolder ID="pnlMenuAutenticado" runat="server">
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="Home.aspx">Inicio</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a id="lnkDashboard" runat="server" class="nav-link" href="Dashboard.aspx">Dashboard</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a id="lnkLibros" runat="server" class="nav-link" href="AdminLibros.aspx">Libros</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a id="lnkUsuarios" runat="server" class="nav-link" href="AdminUsuarios.aspx">Usuarios</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <span class="nav-link user-pill">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <asp:Label ID="lblUsuarioActual" runat="server" />
+                                </span>
+                            </li>
+
+                            <li class="nav-item">
+                                <asp:LinkButton ID="btnCerrarSesion" runat="server"
+                                    CssClass="nav-link logout-link"
+                                    OnClick="btnCerrarSesion_Click">
+                                    <i class="bi bi-box-arrow-right me-1"></i>Salir
+                                </asp:LinkButton>
+                            </li>
+
+                        </asp:PlaceHolder>
+
+                        <li class="nav-item mt-2 mt-lg-0">
                             <div class="theme-switch-wrapper">
-                                <span class="theme-icon" title="Modo oscuro">
+                                <span class="theme-icon">
                                     <i class="bi bi-moon-stars-fill"></i>
                                 </span>
                                 <label class="theme-toggle" title="Cambiar tema">
@@ -290,6 +245,7 @@
                                 </label>
                             </div>
                         </li>
+
                     </ul>
                 </div>
             </div>
@@ -310,12 +266,15 @@
 
             function getCookie(nombre) {
                 const cookies = document.cookie.split(';');
+
                 for (let i = 0; i < cookies.length; i++) {
                     const c = cookies[i].trim();
+
                     if (c.indexOf(nombre + "=") === 0) {
                         return c.substring(nombre.length + 1);
                     }
                 }
+
                 return null;
             }
 
@@ -323,7 +282,7 @@
                 htmlTag.setAttribute("data-bs-theme", tema);
 
                 if (themeSwitch) {
-                    themeSwitch.checked = (tema === "dark");
+                    themeSwitch.checked = tema === "dark";
                 }
 
                 document.cookie = "TemaVisual=" + tema + "; path=/; max-age=" + (60 * 60 * 24 * 30);
@@ -334,14 +293,15 @@
 
             if (themeSwitch) {
                 themeSwitch.addEventListener("change", function () {
-                    const nuevoTema = this.checked ? "dark" : "light";
-                    setTheme(nuevoTema);
+                    setTheme(this.checked ? "dark" : "light");
                 });
             }
 
             const currentPath = window.location.pathname.toLowerCase();
+
             document.querySelectorAll(".navbar .nav-link").forEach(function (link) {
                 const href = link.getAttribute("href");
+
                 if (href && currentPath.indexOf(href.toLowerCase()) !== -1) {
                     link.classList.add("active");
                 }
