@@ -5,314 +5,339 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <style>
-        /* =====================================================
-           CABECERA Y BOTONES RÁPIDOS
-           ===================================================== */
-
-        .btn-acceso {
-            min-width: 220px;
-            min-height: 56px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            border-radius: 14px;
-            font-weight: 500;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: all 0.25s ease;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        .home-header {
+            margin-bottom: 1.5rem;
         }
 
-        .btn-acceso i {
-            font-size: 1.2rem;
+        .home-title {
+            font-weight: 800;
+            letter-spacing: -0.04em;
         }
 
-        .btn-acceso:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.14);
+        .home-subtitle {
+            color: #6c757d;
+            font-size: .95rem;
         }
 
-        .btn-acceso:focus {
-            box-shadow: 0 0 0 .2rem rgba(13, 110, 253, 0.2);
-        }
-
-        /* =====================================================
-           TARJETAS DE LIBROS
-           ===================================================== */
-
-        .card-libro {
-            border-radius: 14px;
-            border: 1px solid #e6e6e6;
-            transition: all 0.35s ease;
-            overflow: hidden;
+        .flat-card {
+            border: 1px solid rgba(0,0,0,.06);
+            border-radius: 18px;
             background: #ffffff;
-            animation: fadeInUp 0.6s ease;
+            box-shadow: 0 8px 22px rgba(0,0,0,.04);
         }
 
-        .card-libro:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
-            border-color: #0d6efd;
+        .quick-card {
+            text-decoration: none;
+            color: inherit;
+            padding: 1.25rem;
+            transition: transform .2s ease, box-shadow .2s ease;
+            display: block;
+            height: 100%;
         }
 
-        .card-libro .card-title {
-            font-weight: 700;
-            font-size: 1.2rem;
-            transition: color 0.3s ease;
+        .quick-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 28px rgba(0,0,0,.08);
+            color: inherit;
         }
 
-        .card-libro:hover .card-title {
+        .quick-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 1.35rem;
+            background: rgba(13,110,253,.08);
             color: #0d6efd;
+            margin-bottom: .9rem;
         }
 
-        .card-libro .card-text {
-            font-size: 0.95rem;
+        .quick-title {
+            font-weight: 700;
+            margin-bottom: .25rem;
         }
 
-        .bloque-filtro {
-            border: 1px solid rgba(0,0,0,.08);
-            border-radius: 12px;
-            padding: 14px;
-            background: rgba(255,255,255,.65);
-            backdrop-filter: blur(4px);
+        .quick-text {
+            color: #6c757d;
+            font-size: .9rem;
+            margin-bottom: 0;
         }
 
-        .acciones-libro .btn {
-            min-width: 110px;
-            transition: all 0.25s ease;
+        .filter-card {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .acciones-libro .btn:hover {
-            transform: translateY(-2px);
+        .catalog-title {
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .book-card {
+            border: 1px solid rgba(0,0,0,.06);
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(0,0,0,.035);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
         }
 
-        /* =====================================================
-           MODO OSCURO
-           ===================================================== */
-
-        [data-bs-theme="dark"] .card-libro {
-            background-color: #1e1e1e;
-            border-color: #333;
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(0,0,0,.075);
+            border-color: rgba(13,110,253,.35);
         }
 
-        [data-bs-theme="dark"] .card-libro .card-title {
-            color: #ffffff;
+        .book-card-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
-        [data-bs-theme="dark"] .card-libro .card-text,
-        [data-bs-theme="dark"] .text-muted {
-            color: #cfcfcf !important;
+        .book-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(13,110,253,.08);
+            color: #0d6efd;
+            flex-shrink: 0;
         }
 
-        [data-bs-theme="dark"] .card-libro:hover {
-            border-color: #4da3ff;
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.55);
+        .book-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            color: #111827;
         }
 
-        [data-bs-theme="dark"] .bloque-filtro {
-            background: rgba(30,30,30,.8);
+        .book-author {
+            font-size: .9rem;
+            color: #6c757d;
+        }
+
+        .book-info {
+            display: grid;
+            gap: .45rem;
+            margin-bottom: 1rem;
+            color: #6c757d;
+            font-size: .9rem;
+        }
+
+        .book-info div {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .book-info i {
+            color: #0d6efd;
+            font-size: .95rem;
+        }
+
+        .book-actions {
+            margin-top: auto;
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+        }
+
+        .book-actions .btn {
+            border-radius: 999px;
+            padding: .35rem .8rem;
+            font-size: .85rem;
+        }
+
+        .empty-state {
+            border-radius: 18px;
+            border: 1px solid rgba(255,193,7,.25);
+            background: rgba(255,193,7,.08);
+            padding: 1rem;
+        }
+
+        [data-bs-theme="dark"] .flat-card,
+        [data-bs-theme="dark"] .book-card {
+            background: #1e1e1e;
             border-color: rgba(255,255,255,.08);
+            box-shadow: 0 8px 22px rgba(0,0,0,.25);
         }
 
-        [data-bs-theme="dark"] .btn-acceso {
-            color: #ffffff !important;
+        [data-bs-theme="dark"] .home-subtitle,
+        [data-bs-theme="dark"] .quick-text,
+        [data-bs-theme="dark"] .book-author,
+        [data-bs-theme="dark"] .book-info,
+        [data-bs-theme="dark"] .text-muted {
+            color: #adb5bd !important;
         }
 
-        [data-bs-theme="dark"] .btn-acceso i {
-            color: #ffffff !important;
+        [data-bs-theme="dark"] .book-title {
+            color: #f8f9fa;
         }
 
-        [data-bs-theme="dark"] .btn-success.btn-acceso {
-            background-color: #198754 !important;
-            border-color: #198754 !important;
+        [data-bs-theme="dark"] .quick-card {
+            color: #f8f9fa;
         }
 
-        [data-bs-theme="dark"] .btn-outline-primary.btn-acceso,
-        [data-bs-theme="dark"] .btn-dark.btn-acceso {
-            color: #ffffff !important;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-primary.btn-acceso {
-            border-color: #4d6bfe !important;
-            background-color: rgba(77, 107, 254, 0.05) !important;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-primary.btn-acceso:hover {
-            background-color: rgba(77, 107, 254, 0.18) !important;
-            border-color: #6a84ff !important;
-        }
-
-        [data-bs-theme="dark"] .btn-dark.btn-acceso {
-            background-color: #23272b !important;
-            border-color: #343a40 !important;
-        }
-
-        [data-bs-theme="dark"] .btn-dark.btn-acceso:hover {
-            background-color: #2c3136 !important;
-            border-color: #495057 !important;
+        [data-bs-theme="dark"] .quick-card:hover {
+            color: #ffffff;
         }
     </style>
 
-    <div class="card shadow-sm p-4">
+    <div class="home-header">
+        <h2 class="home-title mb-1">Biblioteca Digital</h2>
+        <p class="home-subtitle mb-0">
+            Bienvenido, <%: Session["Nombre"] %> · Rol: <%: Session["Rol"] %>
+        </p>
+    </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
-            <div>
-                <h2 class="mb-1">Biblioteca Digital</h2>
-                <p class="text-muted mb-0">
-                    Bienvenido: <%: Session["Nombre"] %> |
-                    Rol: <%: Session["Rol"] %>
-                </p>
+    <div class="row g-3 mb-4">
+
+        <asp:PlaceHolder ID="phDashboard" runat="server" Visible="false">
+            <div class="col-md-4">
+                <a href="Dashboard.aspx" class="flat-card quick-card">
+                    <div class="quick-icon">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+                    <div class="quick-title">Dashboard</div>
+                    <p class="quick-text">Consulta indicadores y actividad reciente del sistema.</p>
+                </a>
+            </div>
+        </asp:PlaceHolder>
+
+        <asp:PlaceHolder ID="phAdminLibros" runat="server" Visible="false">
+            <div class="col-md-4">
+                <a href="AdminLibros.aspx" class="flat-card quick-card">
+                    <div class="quick-icon">
+                        <i class="bi bi-cloud-upload"></i>
+                    </div>
+                    <div class="quick-title">Administrar libros</div>
+                    <p class="quick-text">Carga, edita y organiza documentos digitales.</p>
+                </a>
+            </div>
+        </asp:PlaceHolder>
+
+        <asp:PlaceHolder ID="phAdminUsuarios" runat="server" Visible="false">
+            <div class="col-md-4">
+                <a href="AdminUsuarios.aspx" class="flat-card quick-card">
+                    <div class="quick-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="quick-title">Administrar usuarios</div>
+                    <p class="quick-text">Gestiona usuarios, roles y permisos del sistema.</p>
+                </a>
+            </div>
+        </asp:PlaceHolder>
+
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h4 class="catalog-title mb-1">Catálogo de libros</h4>
+            <p class="text-muted mb-0 small">Consulta, abre o descarga archivos disponibles.</p>
+        </div>
+    </div>
+
+    <div class="flat-card filter-card">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label for="txtBuscar" class="form-label">
+                    <i class="bi bi-search me-1"></i>Buscar
+                </label>
+                <input type="text"
+                       id="txtBuscar"
+                       class="form-control"
+                       placeholder="Buscar por libro, autor, ISBN o categoría..." />
             </div>
 
-            <asp:Button ID="btnLogout" runat="server"
-                Text="Cerrar sesión"
-                CssClass="btn btn-outline-danger"
-                OnClick="btnLogout_Click" />
-        </div>
-
-        <hr />
-
-        <asp:Panel ID="pnlAdminLibros" runat="server" Visible="false" CssClass="mb-3 d-flex gap-3 flex-wrap">
-
-            <a href="AdminLibros.aspx" class="btn btn-success btn-acceso">
-                <i class="bi bi-upload me-1"></i>Administrar libros
-            </a>
-
-            <a href="Dashboard.aspx" class="btn btn-outline-primary btn-acceso">
-                <i class="bi bi-bar-chart-line me-1"></i>Dashboard
-            </a>
-
-        </asp:Panel>
-
-        <asp:Panel ID="pnlAdminUsuarios" runat="server" Visible="false" CssClass="mb-4 d-flex gap-3 flex-wrap">
-            <a href="AdminUsuarios.aspx" class="btn btn-dark btn-acceso">
-                <i class="bi bi-people me-1"></i>Administrar usuarios
-            </a>
-        </asp:Panel>
-
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <h4 class="mb-0">Catálogo de libros</h4>
-            <span class="text-muted small">Consulta, abre o descarga archivos</span>
-        </div>
-
-        <div class="bloque-filtro mb-4">
-            <div class="row g-3">
-
-                <div class="col-md-8">
-                    <label for="txtBuscar" class="form-label">
-                        <i class="bi bi-search me-1"></i>Buscar
-                    </label>
-                    <input type="text"
-                           id="txtBuscar"
-                           class="form-control"
-                           placeholder="Buscar por libro, autor, ISBN o categoría..." />
-                </div>
-
-                <div class="col-md-4">
-                    <label for="ddlCategoriaFiltro" class="form-label">
-                        <i class="bi bi-funnel me-1"></i>Categoría
-                    </label>
-                    <select id="ddlCategoriaFiltro" class="form-select">
-                        <option value="">Todas las categorías</option>
-                    </select>
-                </div>
-
+            <div class="col-md-4">
+                <label for="ddlCategoriaFiltro" class="form-label">
+                    <i class="bi bi-funnel me-1"></i>Categoría
+                </label>
+                <select id="ddlCategoriaFiltro" class="form-select">
+                    <option value="">Todas las categorías</option>
+                </select>
             </div>
         </div>
+    </div>
 
-        <asp:Repeater ID="rptLibros" runat="server">
+    <asp:Repeater ID="rptLibros" runat="server">
+        <HeaderTemplate>
+            <div class="row g-3" id="contenedorLibros">
+        </HeaderTemplate>
 
-            <HeaderTemplate>
-                <div class="row g-4" id="contenedorLibros">
-            </HeaderTemplate>
+        <ItemTemplate>
+            <div class="col-md-4 libro-item"
+                 data-titulo='<%# Server.HtmlEncode(Convert.ToString(Eval("Titulo"))) %>'
+                 data-autor='<%# Server.HtmlEncode(Convert.ToString(Eval("Autor"))) %>'
+                 data-categoria='<%# Server.HtmlEncode(Convert.ToString(Eval("Categoria"))) %>'
+                 data-isbn='<%# Server.HtmlEncode(Convert.ToString(Eval("ISBN"))) %>'>
 
-            <ItemTemplate>
-                <div class="col-md-4 libro-item"
-                    data-titulo='<%# Eval("Titulo") %>'
-                    data-autor='<%# Eval("Autor") %>'
-                    data-categoria='<%# Eval("Categoria") %>'
-                    data-isbn='<%# Eval("ISBN") %>'>
+                <div class="book-card h-100">
+                    <div class="book-card-body">
 
-                    <div class="card card-libro h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column">
-
-                            <h5 class="card-title mb-3">
-                                <%# Eval("Titulo") %>
-                            </h5>
-
-                            <p class="card-text mb-2">
-                                <strong>Autor:</strong>
-                                <%# Eval("Autor") %>
-                            </p>
-
-                            <p class="card-text mb-2">
-                                <small class="text-muted">
-                                    <i class="bi bi-bookmark me-1"></i>
-                                    Categoría: <%# Eval("Categoria") %>
-                                </small>
-                            </p>
-
-                            <p class="card-text mb-2">
-                                <small class="text-muted">
-                                    <i class="bi bi-upc-scan me-1"></i>
-                                    ISBN: <%# Eval("ISBN") %>
-                                </small>
-                            </p>
-
-                            <p class="card-text mb-3">
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar-event me-1"></i>
-                                    Fecha: <%# Eval("FechaPublicacion", "{0:dd/MM/yyyy}") %>
-                                </small>
-                            </p>
-
-                            <div class="acciones-libro mt-auto d-flex gap-2 flex-wrap">
-                                <a href='https://localhost:44341/api/libros/abrir/<%# Eval("IdLibro") %>'
-                                   class="btn btn-outline-primary btn-sm"
-                                   target="_blank">
-                                    <i class="bi bi-eye me-1"></i>Abrir
-                                </a>
-
-                                <a href='https://localhost:44341/api/libros/descargar/<%# Eval("IdLibro") %>'
-                                   class="btn btn-primary btn-sm">
-                                    <i class="bi bi-download me-1"></i>Descargar
-                                </a>
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <div class="book-badge">
+                                <i class="bi bi-book"></i>
                             </div>
 
+                            <div class="flex-grow-1">
+                                <h5 class="book-title mb-1"><%# Eval("Titulo") %></h5>
+                                <p class="book-author mb-0"><%# Eval("Autor") %></p>
+                            </div>
                         </div>
+
+                        <div class="book-info">
+                            <div>
+                                <i class="bi bi-bookmark"></i>
+                                <span>Categoría: <%# Eval("Categoria") %></span>
+                            </div>
+
+                            <div>
+                                <i class="bi bi-upc-scan"></i>
+                                <span>ISBN: <%# Eval("ISBN") %></span>
+                            </div>
+
+                            <div>
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Fecha: <%# Eval("FechaPublicacion", "{0:dd/MM/yyyy}") %></span>
+                            </div>
+                        </div>
+
+                        <div class="book-actions">
+                            <a href='<%# ApiBaseUrl + "api/libros/abrir/" + Eval("IdLibro") %>'
+                               class="btn btn-outline-primary btn-sm"
+                               target="_blank">
+                                <i class="bi bi-eye me-1"></i>Abrir
+                            </a>
+
+                            <a href='<%# ApiBaseUrl + "api/libros/descargar/" + Eval("IdLibro") %>'
+                               class="btn btn-primary btn-sm">
+                                <i class="bi bi-download me-1"></i>Descargar
+                            </a>
+                        </div>
+
                     </div>
                 </div>
-            </ItemTemplate>
+            </div>
+        </ItemTemplate>
 
-            <FooterTemplate>
-                </div>
-            </FooterTemplate>
+        <FooterTemplate>
+            </div>
+        </FooterTemplate>
+    </asp:Repeater>
 
-        </asp:Repeater>
+    <asp:Label ID="lblSinLibros" runat="server" CssClass="text-muted d-block mt-3"></asp:Label>
 
-        <asp:Label ID="lblSinLibros" runat="server" CssClass="text-muted d-block mt-3"></asp:Label>
-
-        <div id="sinResultados" class="text-muted mt-3" style="display:none;">
-            No se encontraron libros con esos criterios.
-        </div>
-
+    <div id="sinResultados" class="empty-state mt-3" style="display:none;">
+        <i class="bi bi-search me-2"></i>
+        No se encontraron libros con esos criterios.
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-
             const txtBuscar = document.getElementById("txtBuscar");
             const ddlCategoriaFiltro = document.getElementById("ddlCategoriaFiltro");
             const libros = document.querySelectorAll(".libro-item");
@@ -321,16 +346,15 @@
             function cargarCategorias() {
                 const categorias = new Set();
 
-                libros.forEach(libro => {
+                libros.forEach(function (libro) {
                     const categoria = (libro.dataset.categoria || "").trim();
+
                     if (categoria) {
                         categorias.add(categoria);
                     }
                 });
 
-                const categoriasOrdenadas = Array.from(categorias).sort();
-
-                categoriasOrdenadas.forEach(categoria => {
+                Array.from(categorias).sort().forEach(function (categoria) {
                     const option = document.createElement("option");
                     option.value = categoria.toLowerCase();
                     option.textContent = categoria;
@@ -344,7 +368,7 @@
 
                 let visibles = 0;
 
-                libros.forEach(libro => {
+                libros.forEach(function (libro) {
                     const titulo = (libro.dataset.titulo || "").toLowerCase();
                     const autor = (libro.dataset.autor || "").toLowerCase();
                     const categoria = (libro.dataset.categoria || "").toLowerCase();
@@ -371,6 +395,7 @@
             }
 
             cargarCategorias();
+
             txtBuscar.addEventListener("input", filtrarLibros);
             ddlCategoriaFiltro.addEventListener("change", filtrarLibros);
         });

@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Web.Script.Serialization;
 
 namespace BibliotecaDigital.Web
 {
     
     /// Página principal del sistema Biblioteca Digital.
-    /// Muestra el catálogo de libros, habilita accesos rápidos
-    /// según el rol del usuario y permite cerrar la sesión.
+    /// Muestra el catálogo de libros y accesos rápidos según el rol del usuario.
     
     public partial class Home : System.Web.UI.Page
     {
         
+        /// URL base de la API.
+        /// Se utiliza desde el archivo ASPX para generar enlaces de abrir y descargar libros.
+        
+        public string ApiBaseUrl { get; private set; }
+
+        
         /// Evento de carga de la página.
-        /// Verifica si el usuario tiene sesión activa y,
-        /// en la primera carga, muestra los paneles de acceso
-        /// y carga los libros del catálogo.
+        /// Valida sesión activa, configura accesos rápidos y carga el catálogo.
         
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Verifica que el usuario haya iniciado sesión
+            ApiBaseUrl = ObtenerApiBaseUrl();
+
             if (Session["UsuarioId"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            // Solo ejecutar la carga inicial una vez
             if (!IsPostBack)
             {
                 MostrarPanelAccesoRapido();
@@ -34,51 +39,65 @@ namespace BibliotecaDigital.Web
         }
 
         
-        /// Muestra los paneles de acceso rápido según el rol.
-        /// - Administrador: libros, dashboard y usuarios
-        /// - Bibliotecario: libros y dashboard
-        /// - Ejecutivo: libros y dashboard
-        /// - Usuario: sin paneles administrativos
+        /// Obtiene y normaliza la URL base de la API desde Web.config.
         
-        private void MostrarPanelAccesoRapido()
+        private string ObtenerApiBaseUrl()
         {
-            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : string.Empty;
+            string url = ConfigurationManager.AppSettings["ApiBaseUrl"];
 
-            // Panel general de libros/dashboard
-            if (rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase) ||
-                rol.Equals("Bibliotecario", StringComparison.OrdinalIgnoreCase) ||
-                rol.Equals("Ejecutivo", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(url))
             {
-                pnlAdminLibros.Visible = true;
-            }
-            else
-            {
-                pnlAdminLibros.Visible = false;
+                return "https://localhost:44341/";
             }
 
-            // Panel exclusivo para administración de usuarios
-            if (rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase))
-            {
-                pnlAdminUsuarios.Visible = true;
-            }
-            else
-            {
-                pnlAdminUsuarios.Visible = false;
-            }
+            return url.EndsWith("/") ? url : url + "/";
         }
 
+        
+        /// Muestra los accesos rápidos según el rol del usuario.
+        /// Administrador:
+        /// - Dashboard
+        /// - Administración de libros
+        /// - Administración de usuarios
+        /// 
+        /// Bibliotecario:
+        /// - Dashboard
+        /// - Administración de libros
+        /// 
+        /// Ejecutivo:
+        /// - Dashboard
+        /// 
+        /// User:
+        /// - Solo catálogo
+       
+        private void MostrarPanelAccesoRapido()
+        {
+            string rol = Session["Rol"] != null
+                ? Session["Rol"].ToString()
+                : string.Empty;
 
-        /// Consulta todos los libros desde la base de datos
-        /// y los muestra en el Repeater del catálogo.
-        /// Si no existen libros, muestra un mensaje informativo.
+            phDashboard.Visible =
+                rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase) ||
+                rol.Equals("Bibliotecario", StringComparison.OrdinalIgnoreCase) ||
+                rol.Equals("Ejecutivo", StringComparison.OrdinalIgnoreCase);
 
+            phAdminLibros.Visible =
+                rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase) ||
+                rol.Equals("Bibliotecario", StringComparison.OrdinalIgnoreCase);
+
+            phAdminUsuarios.Visible =
+                rol.Equals("Administrador", StringComparison.OrdinalIgnoreCase);
+        }
+
+       
+        /// Consulta todos los libros desde la API y los muestra en el Repeater.
+        
         private void CargarLibros()
         {
             try
             {
                 using (var client = ApiHelper.CrearCliente())
                 {
-                    // Llamar a la API
                     var response = client.GetAsync("api/libros").Result;
 
                     if (!response.IsSuccessStatusCode)
@@ -87,41 +106,23 @@ namespace BibliotecaDigital.Web
                         return;
                     }
 
-                    // Leer JSON
-                    var json = response.Content.ReadAsStringAsync().Result;
+                    string json = response.Content.ReadAsStringAsync().Result;
 
-                    // Deserializar
-                    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                    var libros = serializer.Deserialize<List<Libro>>(json);
+                    JavaScriptSerializer serializer = new JavaScriptSerializer();
+                    List<Libro> libros = serializer.Deserialize<List<Libro>>(json);
 
                     rptLibros.DataSource = libros;
                     rptLibros.DataBind();
 
-                    if (libros == null || libros.Count == 0)
-                    {
-                        lblSinLibros.Text = "No hay libros disponibles.";
-                    }
-                    else
-                    {
-                        lblSinLibros.Text = "";
-                    }
+                    lblSinLibros.Text = libros == null || libros.Count == 0
+                        ? "No hay libros disponibles."
+                        : string.Empty;
                 }
             }
             catch (Exception ex)
             {
                 lblSinLibros.Text = "Error al cargar libros: " + ex.Message;
             }
-        }
-
-
-        /// Cierra la sesión actual del usuario
-        /// y lo redirige nuevamente al login.
-
-        protected void btnLogout_Click(object sender, EventArgs e)
-        {
-            Session.Clear();
-            Session.Abandon();
-            Response.Redirect("Login.aspx");
         }
     }
 }

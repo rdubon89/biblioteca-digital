@@ -15,31 +15,31 @@ namespace BibliotecaDigital.Web
     {
 
         /// <summary>
-        /// Control btnLogout.
+        /// Control phDashboard.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnLogout;
+        protected global::System.Web.UI.WebControls.PlaceHolder phDashboard;
 
         /// <summary>
-        /// Control pnlAdminLibros.
+        /// Control phAdminLibros.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlAdminLibros;
+        protected global::System.Web.UI.WebControls.PlaceHolder phAdminLibros;
 
         /// <summary>
-        /// Control pnlAdminUsuarios.
+        /// Control phAdminUsuarios.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlAdminUsuarios;
+        protected global::System.Web.UI.WebControls.PlaceHolder phAdminUsuarios;
 
         /// <summary>
         /// Control rptLibros.

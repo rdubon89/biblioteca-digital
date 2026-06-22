@@ -60,15 +60,6 @@ namespace BibliotecaDigital.Web
         protected global::System.Web.UI.WebControls.Label lblTotalAccesos;
 
         /// <summary>
-        /// Control gvAccesos.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvAccesos;
-
-        /// <summary>
         /// Control rptLibrosCategoriaCompleto.
         /// </summary>
         /// <remarks>
@@ -76,6 +67,15 @@ namespace BibliotecaDigital.Web
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater rptLibrosCategoriaCompleto;
+
+        /// <summary>
+        /// Control gvAccesos.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvAccesos;
 
         /// <summary>
         /// Control gvUltimosLibrosCompleto.
